@@ -1,0 +1,23 @@
+#myCanvas{
+
+    border: 2px solid black;
+    margin: 0;
+
+}
+
+#main{
+
+    width: 859px;
+    /*margin: auto;*/
+    padding: 20px;
+    border: 2px solid black;
+    
+
+
+}
+
+h1{
+
+text-align:justify;
+
+}

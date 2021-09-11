@@ -1,0 +1,55 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!--  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">-->
+    <link rel="stylesheet" href="css/style.css">
+    <title>Paint xD</title>
+</head>
+
+<body>
+
+    <h1>Mini Paint</h1>
+
+    <section id="main">
+
+        <label for="herramientas">Herramientas</label>
+        <input type="color" id="color" oninput="getColor(this.value);">
+        <input type="range" id="range" onchange="getRange(this);" min="1" max="10" value="1"> <span id="value">1</span>
+        <input type="button" id="dibujar" value="Dibujar">
+        <input type="button" id="borrar" value="Borrar">
+        <input type="button" value="Limpiar" onclick="limpiar();">
+        <input type="file" id="fileElem" multiple accept="image/*" style="display:none">
+        <a href="#" id="fileSelect">Subir imagen</a>
+        <div id="fileList">
+            <p>No files selected!</p>
+        </div>
+        <input type="button" id=decargar value="Descargar Imagen">
+
+        <!--Filtros-->
+        <label for="filtros">Filtros</label>
+        <input type="button" value="Brillo" onclick="brillo();">
+        <input type="button" value="Negativo" onclick="negativo();">
+        <input type="button" value="Binarización" onclick="binarizar();">
+        <input type="button" value="Sepia" onclick="sepia();">
+        <input type="button" value="Escala de grises" onclick="grises();">
+        <input type="button" value="Saturación" onclick="saturar();">
+        <input type="button" value="Detección de bordes" onclick="bordes();">
+        <input type="button" value="Difuminado" onclick="blur();">
+
+    </section>
+
+    <canvas id="myCanvas"></canvas>
+
+
+
+    <script src="js/tp_1.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>-->
+
+
+</body>
+
+
+</html>
