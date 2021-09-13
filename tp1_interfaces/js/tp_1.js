@@ -227,48 +227,7 @@ function grey() {
 
 }
 
-//Filtro Difuminado (Blur).
 
-
-dif.addEventListener('click', difuminar)
-function difuminar() {
-
-
-    let kernel = [[1, 4, 7, 4, 1], [4, 16, 26, 16, 4], [7, 26, 41, 26, 4], [4, 16, 26, 16, 7], [1, 4, 7, 4, 1]];
-    let prom = 0; let p1 = 0; let p2 = 0; let p3 = 0; let p4 = 0; let p5 = 0; let p6 = 0; let p7 = 0; let p8 = 0;
-    let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    let imageData2 = '';
-
-    for (let x = 0; x < imageData.width; x++) {
-
-        for (let y = 0; y < imageData.height; y++) {
-            //p1 = [(x+1),y]
-            // prom =([(x+1),y]+[(x-1),y]+[x,(y+1)]+[x,(y-1)]+[(x+1),(y-1)]+[(x-1),(y-1)]+[(x-1),(y-1)]+[(x-1),(y+1)])/9;
-            let suma = 0;
-            for (let i = 0; i < kernel.length; i++) {
-
-                for (let j = 0; j < kernel.length; j++) {
-
-                    suma = imageData[x - i, y - j] * kernel[i + 1, j + 1];
-                    console.log(suma);
-                    suma++;
-                }
-
-            }
-
-            imageData2 = suma;
-            let r = getRed(imageData2, x, y);
-            let g = getGreen(imageData2, x, y);
-            let b = getBlue(imageData2, x, y);
-            let a = 255;
-
-
-            setPixel(imageData2, x, y, r, g, b);
-        }
-    }
-    //Dibujar imagen en canvas
-    ctx.putImageData(imageData2, 0, 0);
-}
 
 //Filtro Negativo
 
@@ -351,7 +310,7 @@ function filSepia() {
 
                     r = grey;
                     g = grey;
-                    b = 0;
+                    b = grey;
 
                     setPixel(imageData, x, y, r, g, b);
 
@@ -361,3 +320,42 @@ function filSepia() {
     ctx.putImageData(imageData, 0, 0);
 
 }
+document.querySelector('#dif').addEventListener('click',difuminado);
+
+
+//Filtro BLUR 
+    function difuminado() {
+        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        let r, g, b, a;
+
+        for (let x = 1; x < canvas.width-1; x++) {
+            for (let y = 1; y < canvas.height-1; y++) {
+                r = prom(imageData, x, y, 0);
+                g = prom(imageData, x, y, 1);
+                b = prom(imageData, x, y, 2);
+                a = prom(imageData, x, y, 3);
+                setPixel(imageData, x, y, r, g, b, a);
+            }
+        }
+        ctx.putImageData(imageData, 0, 0);
+    }
+
+    function prom(imageData, x, y, a) {
+        //posiciones
+        let p00 = getValue(imageData, x-1, y-1, a);
+        let p01 = getValue(imageData, x, y-1, a);
+        let p02 = getValue(imageData, x+1, y-1, a);
+        let p10 = getValue(imageData, x-1, y, a);
+        let p11 = getValue(imageData, x, y, a);
+        let p12 = getValue(imageData, x+1, y, a);
+        let p20 = getValue(imageData, x-1, y+1, a);
+        let p21 = getValue(imageData, x, y+1, a);
+        let p22 = getValue(imageData, x+1, y+1, a);
+
+        function getValue(imageData, x, y, a) {
+            let index = (x + y * imageData.width) * 4;
+            return imageData.data[index + a];
+        }
+
+        return (p00 + p01 + p02 + p10 + p11 + p12 + p20 + p21 + p22) / 9;
+    }
