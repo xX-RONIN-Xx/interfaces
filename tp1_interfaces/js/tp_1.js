@@ -355,7 +355,7 @@ function filSepia() {
 
                     r = grey;
                     g = grey;
-                    b = ;
+                    b = grey;
 
                     setPixel(imageData, x, y, r, g, b);
 
