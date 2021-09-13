@@ -308,11 +308,11 @@ function filSepia() {
             let grey = Math.round((r + g + b) / 3);
 
 
-                    r = grey;
-                    g = grey;
-                    b = grey;
+            r = grey;
+            g = grey;
+            b = grey;
 
-                    setPixel(imageData, x, y, r, g, b);
+            setPixel(imageData, x, y, r, g, b);
 
         }
     }
@@ -320,42 +320,64 @@ function filSepia() {
     ctx.putImageData(imageData, 0, 0);
 
 }
-document.querySelector('#dif').addEventListener('click',difuminado);
+document.querySelector('#dif').addEventListener('click', difuminado);
 
 
 //Filtro BLUR 
-    function difuminado() {
-        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        let r, g, b, a;
+function difuminado() {
+    let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let r, g, b, a;
 
-        for (let x = 1; x < canvas.width-1; x++) {
-            for (let y = 1; y < canvas.height-1; y++) {
-                r = prom(imageData, x, y, 0);
-                g = prom(imageData, x, y, 1);
-                b = prom(imageData, x, y, 2);
-                a = prom(imageData, x, y, 3);
-                setPixel(imageData, x, y, r, g, b, a);
-            }
+    for (let x = 1; x < canvas.width - 1; x++) {
+        for (let y = 1; y < canvas.height - 1; y++) {
+            r = prom(imageData, x, y, 0);
+            g = prom(imageData, x, y, 1);
+            b = prom(imageData, x, y, 2);
+            a = prom(imageData, x, y, 3);
+            setPixel(imageData, x, y, r, g, b, a);
         }
-        ctx.putImageData(imageData, 0, 0);
+    }
+    ctx.putImageData(imageData, 0, 0);
+}
+
+function prom(imageData, x, y, a) {
+    //posiciones
+    let p00 = getValue(imageData, x - 1, y - 1, a);
+    let p01 = getValue(imageData, x, y - 1, a);
+    let p02 = getValue(imageData, x + 1, y - 1, a);
+    let p10 = getValue(imageData, x - 1, y, a);
+    let p11 = getValue(imageData, x, y, a);
+    let p12 = getValue(imageData, x + 1, y, a);
+    let p20 = getValue(imageData, x - 1, y + 1, a);
+    let p21 = getValue(imageData, x, y + 1, a);
+    let p22 = getValue(imageData, x + 1, y + 1, a);
+
+    function getValue(imageData, x, y, a) {
+        let index = (x + y * imageData.width) * 4;
+        return imageData.data[index + a];
     }
 
-    function prom(imageData, x, y, a) {
-        //posiciones
-        let p00 = getValue(imageData, x-1, y-1, a);
-        let p01 = getValue(imageData, x, y-1, a);
-        let p02 = getValue(imageData, x+1, y-1, a);
-        let p10 = getValue(imageData, x-1, y, a);
-        let p11 = getValue(imageData, x, y, a);
-        let p12 = getValue(imageData, x+1, y, a);
-        let p20 = getValue(imageData, x-1, y+1, a);
-        let p21 = getValue(imageData, x, y+1, a);
-        let p22 = getValue(imageData, x+1, y+1, a);
+    return (p00 + p01 + p02 + p10 + p11 + p12 + p20 + p21 + p22) / 9;
+}
 
-        function getValue(imageData, x, y, a) {
-            let index = (x + y * imageData.width) * 4;
-            return imageData.data[index + a];
+document.querySelector('#saturacion').addEventListener('click', saturacion);
+
+function saturacion() {
+    let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+        let contrast = 10;
+        let average = Math.round((data[i] + data[i + 1] + data[i + 2]) / 3);
+        if (average > 127) {
+            data[i] += (data[i] / average) * contrast;
+            data[i + 1] += (data[i + 1] / average) * contrast;
+            data[i + 2] += (data[i + 2] / average) * contrast;
+        } else {
+            data[i] -= (data[i] / average) * contrast;
+            data[i + 1] -= (data[i + 1] / average) * contrast;
+            data[i + 2] -= (data[i + 2] / average) * contrast;
         }
-
-        return (p00 + p01 + p02 + p10 + p11 + p12 + p20 + p21 + p22) / 9;
+        setPixel(imageData, i, 0, data[i], data[i+1], data[i+2], 255);
     }
+    ctx.putImageData(imageData, 0, 0);
+}
