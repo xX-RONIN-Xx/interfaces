@@ -339,24 +339,25 @@ sepia.addEventListener('click', filSepia);
 function filSepia() {
     let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
+
+
     for (let x = 0; x < imageData.width; x++) {
         for (let y = 0; y < imageData.height; y++) {
+            //modifico funcion setPixel para usarla en esta ya que lo pixeles no se setean de la misma manera.
+            let index = (x + y * imageData.width) * 4;
 
-            let r = getRed(imageData, x, y);
-            let g = getGreen(imageData, x, y);
-            let b = getBlue(imageData, x, y);
+            //guardo valores en  r,g y b.
 
-            let grey = Math.round((r + g + b) / 3);
-
-
-                    r = grey;
-                    g = grey;
-                    b = grey;
-
-                    setPixel(imageData, x, y, r, g, b);
-
+            let r = imageData.data[index + 0];
+            let g = imageData.data[index + 1];
+            let b = imageData.data[index + 2];
+            //calculo los nuevos valores que van a tener los pixeles. Este cálculo permite obtener el filtro sepia.      
+            imageData.data[index + 0] = (r * .393) + (g * .769) + (b * .189);
+            imageData.data[index + 1] = (r * .349) + (g * .686) + (b * .168);
+            imageData.data[index + 2] = (r * .272) + (g * .534) + (b * .131);
         }
     }
+
     //Dibujar imagen en canvas
     ctx.putImageData(imageData, 0, 0);
 
