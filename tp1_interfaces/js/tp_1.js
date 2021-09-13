@@ -58,14 +58,10 @@ borrar.addEventListener("click", Borrar);
 
 function changeColorOnDrawing() {
     color = document.getElementById('color').value;
-    ctx.strokeStyle = color;
-    drawing(x1, y1, x2, y2);
-
 }
 
 function changeColor() {
     color = 'white';
-    ctx.strokeStyle = color;
     return color;
 
 }
@@ -106,7 +102,7 @@ function limpiar() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     color = 'black';
     ctx.strokeStyle = color;
-    ctx.strokeRec(0, 0, canvas.width, canvas.height);
+    ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
 
 
@@ -355,7 +351,7 @@ function filSepia() {
 
                     r = grey;
                     g = grey;
-                    b = ;
+                    b = 0;
 
                     setPixel(imageData, x, y, r, g, b);
 
