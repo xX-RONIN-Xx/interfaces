@@ -4,7 +4,7 @@
 
 let canvas = document.getElementById("myCanvas");
 let ctx = canvas.getContext("2d");
-let space = canvas.getBoundingClientRect();
+//let space = canvas.getBoundingClientRect();
 ctx.lineWidth = 1;
 let x = 0; let y = 0; let draw = false; let color = 'black'; let datosImg; let imgWidth = 0; let imgHeight = 0;
 
@@ -360,9 +360,9 @@ function prom(imageData, x, y, a) {
     return (p00 + p01 + p02 + p10 + p11 + p12 + p20 + p21 + p22) / 9;
 }
 
-document.querySelector('#saturacion').addEventListener('click', saturacion);
+document.querySelector('#contraste').addEventListener('click', contraste);
 
-function saturacion() {
+function contraste() {
     let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     let data = imageData.data;
     for (let i = 0; i < data.length; i += 4) {
@@ -377,7 +377,188 @@ function saturacion() {
             data[i + 1] -= (data[i + 1] / average) * contrast;
             data[i + 2] -= (data[i + 2] / average) * contrast;
         }
-        setPixel(imageData, i, 0, data[i], data[i+1], data[i+2], 255);
+
+    }
+    ctx.putImageData(imageData, 0, 0);
+}
+
+
+document.querySelector('#saturacion').addEventListener('click', saturacion);
+
+function saturacion() {
+    
+     let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+     let pixels = imageData.data;
+     let numPixels = imageData.width * imageData.height;
+     let factor;
+    let contrast=20;
+ 
+    factor = ( 255 * ( contrast + 255 ) ) / ( 255 * ( 255 - contrast ) );
+ 
+    for ( let i = 0; i < numPixels; i++ ) {
+        let r = pixels[ i * 4 ];
+        let g = pixels[ i * 4 + 1 ];
+        let b = pixels[ i * 4 + 2 ];
+ 
+        pixels[ i * 4 ] = factor * ( r - 128 ) + 128;
+        pixels[ i * 4 + 1 ] = factor * ( g - 128 ) + 128;
+        pixels[ i * 4 + 2 ] = factor * ( b - 128 ) + 128;
+    }
+ 
+    ctx.putImageData(imageData, 0, 0);
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Filtro Deteccion de bordes.
+
+/*bordes.addEventListener('click', detectBordes)
+function detectBordes() {
+
+        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        let r, g, b, a;
+
+        for (let x = 1; x < canvas.width-1; x++) {
+            for (let y = 1; y < canvas.height-1; y++) {
+                r = calcSobel(imageData, x, y, 0);
+                g = calcSobel(imageData, x, y, 1);
+                b = calcSobel(imageData, x, y, 2);
+                a = calcSobel(imageData, x, y, 3);
+                setPixel(imageData, x, y, r, g, b);
+            }
+        }
+        ctx.putImageData(imageData, 0, 0);
+    }
+
+    //let sobelX =[-1,0,1,-2,0,2,-1,0,1];
+    function calcSobel(imageData, x, y, c) {
+        //posiciones
+        let p00 = getValue(imageData, x-1, y-1, c);
+        let p01 = getValue(imageData, x, y-1, c);
+        let p02 = getValue(imageData, x+1, y-1, c);
+        let p10 = getValue(imageData, x-1, y, c);
+        let p11 = getValue(imageData, x, y, c);
+        let p12 = getValue(imageData, x+1, y, c);
+        let p20 = getValue(imageData, x-1, y+1, c);
+        let p21 = getValue(imageData, x, y+1, c);
+        let p22 = getValue(imageData, x+1, y+1, c);
+
+        function getValue(imageData, x, y, c) {
+            let index = (x + y * imageData.width) * 4;
+            return imageData.data[index + c];
+        }
+
+        let sobelx = ((p00 * -1) + (p01 * 0) + (p02 * 1) + (p10 * -2) + (p11 * 0) + (p12 * 2) + (p20 * -1) + (p21 * 0) + (p22 * 1));
+        let sobely = ((p00 * 1) + (p01 * 2) + (p02 * 1) + (p10 * 0) + (p11 * 0) + (p12 * 0) + (p20 * -1) + (p21 * -2) + (p22 * -1));
+
+       //let valorFinal = Math.sqrt((sobelx * sobelx)+ (sobely *sobely));
+
+       //return valorFinal
+       let valorFinal=sobelx/sobely;
+      if(valorFinal>0.1){
+           
+          return 255;
+
+       } else{
+
+          return 0;    
+
+       }
+
+
+    }*/
+
+//Filtro Deteccion de bordes.
+
+
+bordes.addEventListener('click', detectBordes)
+function detectBordes() {
+
+    let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    var width = imageData.width;
+    var height = imageData.height;
+
+    var kernelX = [
+        [-1, 0, 1],
+        [-2, 0, 2],
+        [-1, 0, 1]
+    ];
+
+    var kernelY = [
+        [-1, -2, -1],
+        [0, 0, 0],
+        [1, 2, 1]
+    ];
+
+    let r, g, b, a;
+    var grayscaleData = [];
+    let avg = 0;
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+
+            let index = (x + y * width) * 4;
+            r = imageData.data[index + 0];
+            g = imageData.data[index + 1];
+            b = imageData.data[index + 2];
+            a = imageData.data[index + 3];
+            avg = (r + g + b) / 3;
+            grayscaleData.push(avg, avg, avg, a);
+        }
+    }
+
+    function obtenerColorPixel(data, x, y) {
+        let index, cpixcel;
+        index = (x + y * imageData.width) * 4;
+        cpixcel = data[index + 0];
+        return cpixcel;
+    }
+    for (y = 1; y < height - 1; y++) {
+        for (x = 1; x < width - 1; x++) {
+
+
+            var pixelX = (
+                (kernelX[0][0] * obtenerColorPixel(grayscaleData, x - 1, y - 1)) +
+                (kernelX[0][1] * obtenerColorPixel(grayscaleData, x, y - 1)) +
+                (kernelX[0][2] * obtenerColorPixel(grayscaleData, x + 1, y - 1)) +
+                (kernelX[1][0] * obtenerColorPixel(grayscaleData, x - 1, y)) +
+                (kernelX[1][1] * obtenerColorPixel(grayscaleData, x, y)) +
+                (kernelX[1][2] * obtenerColorPixel(grayscaleData, x + 1, y)) +
+                (kernelX[2][0] * obtenerColorPixel(grayscaleData, x - 1, y + 1)) +
+                (kernelX[2][1] * obtenerColorPixel(grayscaleData, x, y + 1)) +
+                (kernelX[2][2] * obtenerColorPixel(grayscaleData, x + 1, y + 1))
+            );
+
+            var pixelY = (
+                (kernelY[0][0] * obtenerColorPixel(grayscaleData, x - 1, y - 1)) +
+                (kernelY[0][1] * obtenerColorPixel(grayscaleData, x, y - 1)) +
+                (kernelY[0][2] * obtenerColorPixel(grayscaleData, x + 1, y - 1)) +
+                (kernelY[1][0] * obtenerColorPixel(grayscaleData, x - 1, y)) +
+                (kernelY[1][1] * obtenerColorPixel(grayscaleData, x, y)) +
+                (kernelY[1][2] * obtenerColorPixel(grayscaleData, x + 1, y)) +
+                (kernelY[2][0] * obtenerColorPixel(grayscaleData, x - 1, y + 1)) +
+                (kernelY[2][1] * obtenerColorPixel(grayscaleData, x, y + 1)) +
+                (kernelY[2][2] * obtenerColorPixel(grayscaleData, x + 1, y + 1))
+            );
+
+            var magnitude = Math.sqrt((pixelX * pixelX) + (pixelY * pixelY));
+            setPixel(imageData, x, y, magnitude, magnitude, magnitude);
+
+        }
     }
     ctx.putImageData(imageData, 0, 0);
 }
