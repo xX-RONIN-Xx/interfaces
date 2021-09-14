@@ -4,11 +4,12 @@
 
 let canvas = document.getElementById("myCanvas");
 let ctx = canvas.getContext("2d");
-let space = canvas.getBoundingClientRect();
+let rec = canvas.getBoundingClientRect();
 ctx.lineWidth = 1;
-let x = 0; let y = 0; let draw = false; let color = 'black'; let datosImg; let imgWidth = 0; let imgHeight = 0;
+let imageRes;
+let x = 0; let y = 0; let x1; let y1; let draw = false; let color = 'black'; let datosImg; let imgWidth = 0; let imgHeight = 0;
 
-canvas.width = 900;
+canvas.width = 700;
 canvas.height = 500;
 
 
@@ -21,22 +22,33 @@ function getRange(range) {
     document.getElementById("value").innerHTML = range.value;
 }
 
+
 canvas.addEventListener('mousedown', function (e) {
+    let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    
+    for (let x = 0; x < imageData.width; x++) {
+        for (let y = 0; y < imageData.height; y++) {
 
-    x = e.clientX - space.left;
-    y = e.clientY - space.top;
-    draw = true;
+            x1 = x;
+            y1 = y;
+            x = e.layerX - x1;
+            y = e.layerY - y1;
+           
+            }
+            if ((x>+0 && x<= imageData.width) && (y>=0 && y<= imageData.height) ){
+                draw = true;
+            }
+        }    
 
-
-})
+        })
 
 canvas.addEventListener('mousemove', function (e) {
 
     if (draw === true) {
 
-        drawing(x, y, e.clientX - space.left, e.clientY - space.top);
-        x = e.clientX - space.left;
-        y = e.clientY - space.top;
+        drawing(x, y, e.layerX - x1, e.layerY - y1);
+        x = e.layerX - x1;
+        y = e.layerY - x2;
     }
 
 })
@@ -45,7 +57,7 @@ canvas.addEventListener('mouseup', function (e) {
 
     if (draw === true) {
 
-        drawing(x, y, e.clientX - space.left, e.clientY - space.top);
+        drawing(x, y, e.layerX - x1, e.layerY - y1);
         x = 0;
         y = 0;
         draw = false;
@@ -54,8 +66,6 @@ canvas.addEventListener('mouseup', function (e) {
 })
 
 dibujar.addEventListener("click", changeColorOnDrawing);
-borrar.addEventListener("click", Borrar);
-
 function changeColorOnDrawing() {
     color = document.getElementById('color').value;
 }
@@ -78,9 +88,7 @@ function drawing(x1, y1, x2, y2) {
 
 }
 
-
-
-
+borrar.addEventListener("click", Borrar);
 function Borrar(x1, y1, x2, y2) {
 
     ctx.beginPath();
@@ -96,14 +104,48 @@ function Borrar(x1, y1, x2, y2) {
 
 function limpiar() {
 
-    canvas.width = 900;
+    canvas.width = 700;
     canvas.height = 500;
-    ctx.lineWidth = 1;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     color = 'black';
     ctx.strokeStyle = color;
     ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
+
+
+}
+
+download.addEventListener("click", guardarImg);
+function guardarImg() {
+
+    let filename = prompt("Guardar como...", "Nombre del archivo");
+    if (canvas.msToBlob) { //para internet explorer
+        let blob = canvas.msToBlob();
+        window.navigator.msSaveBlob(blob, filename + ".png");// la extensión de preferencia pon jpg o png
+    } else {
+        let link = document.getElementById("download");
+        //Otros navegadores: Google chrome, Firefox etc...
+        link.href = canvas.toDataURL("image/png");// Extensión .png ("image/png") --- Extension .jpg ("image/jpeg")
+        link.download = filename;
+    }
+}
+
+restaurar.addEventListener('click', restaurarImg);
+function restaurarImg() {
+
+    for (let x = 0; x < datosImg.width; x++) {
+        for (let y = 0; y < datosImg.height; y++) {
+
+            let r = getRed(datosImg, x, y);
+            let g = getGreen(datosImg, x, y);
+            let b = getBlue(datosImg, x, y);
+
+
+            setPixel(datosImg, x, y, r, g, b);
+        }
+    }
+    //Dibujar imagen en canvas
+    ctx.putImageData(datosImg, 0, 0);
 
 
 }
@@ -159,17 +201,11 @@ function cargarImagen() {
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
                 datosImg = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-
-
             }
         }
-
-
-
     }
-
 }
+
 
 ///////////FILTROS///////////
 
@@ -202,6 +238,31 @@ function setPixel(imageData, x, y, r, g, b, a = 255) {
     imageData.data[index + 3] = a;
 }
 
+//Filtro Brillo
+
+brillo.addEventListener('click', darBrillo);
+
+function darBrillo() {
+
+    let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+    for (let x = 0; x < imageData.width; x++) {
+        for (let y = 0; y < imageData.height; y++) {
+
+            let r = getRed(imageData, x, y) + 25;
+            let g = getGreen(imageData, x, y) + 25;
+            let b = getBlue(imageData, x, y) + 25;
+
+
+            setPixel(imageData, x, y, r, g, b);
+        }
+    }
+    //Dibujar imagen en canvas
+    ctx.putImageData(imageData, 0, 0);
+
+}
+
+
 //Función para aplicar el filtro de grises
 
 grises.addEventListener('click', grey)
@@ -233,41 +294,39 @@ function grey() {
 dif.addEventListener('click', difuminar)
 function difuminar() {
 
-
-    let kernel = [[1, 4, 7, 4, 1], [4, 16, 26, 16, 4], [7, 26, 41, 26, 4], [4, 16, 26, 16, 7], [1, 4, 7, 4, 1]];
-    let prom = 0; let p1 = 0; let p2 = 0; let p3 = 0; let p4 = 0; let p5 = 0; let p6 = 0; let p7 = 0; let p8 = 0;
     let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    let imageData2 = '';
+    let r, g, b, a;
 
-    for (let x = 0; x < imageData.width; x++) {
-
-        for (let y = 0; y < imageData.height; y++) {
-            //p1 = [(x+1),y]
-            // prom =([(x+1),y]+[(x-1),y]+[x,(y+1)]+[x,(y-1)]+[(x+1),(y-1)]+[(x-1),(y-1)]+[(x-1),(y-1)]+[(x-1),(y+1)])/9;
-            let suma = 0;
-            for (let i = 0; i < kernel.length; i++) {
-
-                for (let j = 0; j < kernel.length; j++) {
-
-                    suma = imageData[x - i, y - j] * kernel[i + 1, j + 1];
-                    console.log(suma);
-                    suma++;
-                }
-
-            }
-
-            imageData2 = suma;
-            let r = getRed(imageData2, x, y);
-            let g = getGreen(imageData2, x, y);
-            let b = getBlue(imageData2, x, y);
-            let a = 255;
-
-
-            setPixel(imageData2, x, y, r, g, b);
+    for (let x = 1; x < canvas.width - 1; x++) {
+        for (let y = 1; y < canvas.height - 1; y++) {
+            r = prom(imageData, x, y, 0);
+            g = prom(imageData, x, y, 1);
+            b = prom(imageData, x, y, 2);
+            a = prom(imageData, x, y, 3);
+            setPixel(imageData, x, y, r, g, b, a);
         }
     }
-    //Dibujar imagen en canvas
-    ctx.putImageData(imageData2, 0, 0);
+    ctx.putImageData(imageData, 0, 0);
+}
+
+function prom(imageData, x, y, c) {
+    //posiciones
+    let p00 = getValue(imageData, x - 1, y - 1, c);
+    let p01 = getValue(imageData, x, y - 1, c);
+    let p02 = getValue(imageData, x + 1, y - 1, c);
+    let p10 = getValue(imageData, x - 1, y, c);
+    let p11 = getValue(imageData, x, y, c);
+    let p12 = getValue(imageData, x + 1, y, c);
+    let p20 = getValue(imageData, x - 1, y + 1, c);
+    let p21 = getValue(imageData, x, y + 1, c);
+    let p22 = getValue(imageData, x + 1, y + 1, c);
+
+    function getValue(imageData, x, y, c) {
+        let index = (x + y * imageData.width) * 4;
+        return imageData.data[index + c];
+    }
+
+    return (p00 + p01 + p02 + p10 + p11 + p12 + p20 + p21 + p22) / 9;
 }
 
 //Filtro Negativo
@@ -361,4 +420,87 @@ function filSepia() {
     //Dibujar imagen en canvas
     ctx.putImageData(imageData, 0, 0);
 
+}
+
+//Filtro Deteccion de bordes.
+
+bordes.addEventListener('click', detectBordes)
+function detectBordes() {
+
+    let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    var width = imageData.width;
+    var height = imageData.height;
+
+    var kernelX = [
+        [-1, 0, 1],
+        [-2, 0, 2],
+        [-1, 0, 1]
+    ];
+
+    var kernelY = [
+        [-1, -2, -1],
+        [0, 0, 0],
+        [1, 2, 1]
+    ];
+
+    var grayscaleData = [];
+
+    function bindPixelAt(data) {
+        return function (x, y, i) {
+            i = i || 0;
+            return data[((width * y) + x) * 4 + i];
+        };
+    }
+
+    var data = imageData.data;
+    var pixelAt = bindPixelAt(data);
+    var x, y;
+
+    for (y = 0; y < height; y++) {
+        for (x = 0; x < width; x++) {
+            var r = pixelAt(x, y, 0);
+            var g = pixelAt(x, y, 1);
+            var b = pixelAt(x, y, 2);
+
+            var avg = (r + g + b) / 3;
+            grayscaleData.push(avg, avg, avg, 255);
+        }
+    }
+
+    pixelAt = bindPixelAt(grayscaleData);
+
+    for (y = 0; y < height; y++) {
+        for (x = 0; x < width; x++) {
+            var pixelX = (
+                (kernelX[0][0] * pixelAt(x - 1, y - 1)) +
+                (kernelX[0][1] * pixelAt(x, y - 1)) +
+                (kernelX[0][2] * pixelAt(x + 1, y - 1)) +
+                (kernelX[1][0] * pixelAt(x - 1, y)) +
+                (kernelX[1][1] * pixelAt(x, y)) +
+                (kernelX[1][2] * pixelAt(x + 1, y)) +
+                (kernelX[2][0] * pixelAt(x - 1, y + 1)) +
+                (kernelX[2][1] * pixelAt(x, y + 1)) +
+                (kernelX[2][2] * pixelAt(x + 1, y + 1))
+            );
+
+            var pixelY = (
+                (kernelY[0][0] * pixelAt(x - 1, y - 1)) +
+                (kernelY[0][1] * pixelAt(x, y - 1)) +
+                (kernelY[0][2] * pixelAt(x + 1, y - 1)) +
+                (kernelY[1][0] * pixelAt(x - 1, y)) +
+                (kernelY[1][1] * pixelAt(x, y)) +
+                (kernelY[1][2] * pixelAt(x + 1, y)) +
+                (kernelY[2][0] * pixelAt(x - 1, y + 1)) +
+                (kernelY[2][1] * pixelAt(x, y + 1)) +
+                (kernelY[2][2] * pixelAt(x + 1, y + 1))
+            );
+
+            var magnitude = Math.sqrt((pixelX * pixelX) + (pixelY * pixelY)) >>> 0;
+
+
+            setPixel(imageData, x, y, magnitude, magnitude, magnitude);
+
+        }
+    }
+    ctx.putImageData(imageData, 0, 0);
 }

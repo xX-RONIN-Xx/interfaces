@@ -10,40 +10,66 @@
 </head>
 
 <body>
+    <div class="contenedor">
+        <section class="main" id="main">
+            <div class="container">
+                <div class="main-outer">
+                    <div class="main-left">
+                        <aside>
+                            <h3>Mi Paint</h3>
 
-    <h1>Mini Paint</h1>
+                            <label for="herramientas">Herramientas</label>
+                            <div id="herr">
 
-    <section id="main">
+                                <input type="button" id="dibujar" value="Dib" class="slider">
+                                <input type="button" id="borrar" value="Borr" class="slider">
+                                <input type="button" value="Limp" onclick="limpiar();" class="slider">
+                                <input type="button" id=restaurar value="Rest" class="slider">
+                            </div>
 
-        <label for="herramientas">Herramientas</label>
-        <input type="color" id="color" oninput="getColor(this.value);">
-        <input type="range" id="range" onchange="getRange(this);" min="1" max="10" value="1"> <span id="value">1</span>
-        <input type="button" id="dibujar" value="Dibujar">
-        <input type="button" id="borrar" value="Borrar">
-        <input type="button" value="Limpiar" onclick="limpiar();">
-        <input type="file" id="fileElem" multiple accept="image/*" style="display:none">
-        <a href="#" id="fileSelect">Subir imagen</a>
-        <div id="fileList">
-            <p>No files selected!</p>
-        </div>
-        <input type="button" id=decargar value="Descargar Imagen">
+                            <input type="color" id="color" oninput="getColor(this.value);">
+                            <input type="range" id="range" onchange="getRange(this);" min="1" max="10" value="1">
+                            <span id="value" hidden>1</span>
 
-        <!--Filtros-->
-        <label for="filtros">Filtros</label>
-        <input type="button" id = "brillo" value="Brillo">
-        <input type="button" id = "negativo" value="Negativo">
-        <input type="button" id = "byn" value="Binarización">
-        <input type="button" id = "sepia" value="Sepia">
-        <input type="button" id="grises"  value="Escala de grises">
-        <input type="button" value="Saturación" onclick="saturar();">
-        <input type="button" value="Detección de bordes" onclick="bordes();">
-        <input type="button"  id="dif"  value="Difuminado">
-
-    </section>
-
-    <canvas id="myCanvas"></canvas>
+                            <!--Filtros-->
+                            <label for="filtros">Filtros</label>
+                            <input type="button" id="brillo" value="Brillo" class="slider">
+                            <input type="button" id="negativo" value="Negativo" class="slider">
+                            <input type="button" id="byn" value="Binarización" class="slider">
+                            <input type="button" id="sepia" value="Sepia" class="slider">
+                            <input type="button" id="grises" value="Escala de grises" class="slider">
+                            <input type="button" value="Saturación" onclick="saturar();" class="slider">
+                            <input type="button" id="bordes" value="Bordes" class="slider">
+                            <input type="button" id="dif" value="Difuminado" class="slider">
 
 
+                        </aside>
+                    </div>
+                    <div class="main-right">
+
+                        <div class="descarga">
+                            <a id="download"> <input type="button" value="Descargar"></a>
+                        </div>
+
+                        <div>
+                            <!-- <label id="lbl"  for="Subir o descargar imagen">Subir o descargar imagen</label>-->
+                            <input type="file" id="fileElem" multiple accept="image/*" style="display:none">
+                            <a href="#" id="fileSelect"> <input type="button" class="subir" value="Subir"></a>
+
+                            <div id="fileList" hidden>
+                                <p>No files selected!</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <div id="container" class="canvasImg"> <canvas id="myCanvas"></canvas></div>
+
+    </div>
 
     <script src="js/tp_1.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>-->
