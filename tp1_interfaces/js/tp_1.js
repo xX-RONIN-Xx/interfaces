@@ -4,21 +4,35 @@
 let canvas = document.getElementById("myCanvas");
 let ctx = canvas.getContext("2d");
 let space = canvas.getBoundingClientRect();
-ctx.lineWidth = 1;
 let imageRes;
-let x = 0; let y = 0; let x1; let y1; let draw = false; let color = 'black'; let datosImg; let imgWidth = 0; 
-let imgHeight = 0;
-//defino el tamaño de mi canvas
-canvas.width = 700;
+let x = 0; let y = 0; let draw = false; let color = 'black'; let datosImg; let imgWidth = 0; let imgHeight = 0;
+
+canvas.width = 900;
 canvas.height = 500;
-//lee el color elegido para dibujar
+
+//Dibuja Canvas Inicial
+function drawCanvasBlanco() {
+
+    color = 'white';
+    ctx.fillStyle = color;
+    ctx.fillRect(0,0,canvas.width,canvas.width);
+
+}
+drawCanvasBlanco();
+
+//Color al borde
+color = 'black';
+ctx.strokeStyle = color;
+ctx.lineWidth = 4;
+ctx.strokeRect(0, 0, canvas.width, canvas.height);
+
 function getColor(valueColor) {
     color = valueColor;
 }
 //selecciona el rango del grosor del lapiz o la goma
 function getRange(range) {
     ctx.lineWidth = range.value;
-    document.getElementById("value").innerHTML = range.value;
+    //document.getElementById("value").innerHTML = range.value;
 }
 
 //capturo el clic del mouse
@@ -90,9 +104,9 @@ function Borrar(x1, y1, x2, y2) {
 //limpia el lienzo
 function limpiar() {
 
-    canvas.width = 700;
+    canvas.width = 900;
     canvas.height = 500;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawCanvasBlanco();
     color = 'black';
     ctx.strokeStyle = color;
     ctx.strokeRect(0, 0, canvas.width, canvas.height);
@@ -115,7 +129,7 @@ function guardarImg() {
 }
 //esta funcion quita los filtros aplicados a una imagen
 restaurar.addEventListener('click', restaurarImg);
-function restaurarImg() {
+function restaurarImg(){
 
     for (let x = 0; x < datosImg.width; x++) {
         for (let y = 0; y < datosImg.height; y++) {
@@ -159,8 +173,10 @@ function cargarImagen() {
                 //adapato el lienzo al tamaño de la imagen.
                 if ((imgHeight > canvas.height && imgWidth > canvas.width) || (imgHeight > canvas.height && imgWidth < canvas.width) ||
                     (imgHeight < canvas.height && imgWidth > canvas.width)) {
-                    canvas.height = imgHeight / 2;
-                    canvas.width = imgWidth / 2;
+
+                    canvas.height = imgHeight/(5/2);
+                    canvas.width = imgWidth /(5/2);
+
                 } else {
                     canvas.width = imgWidth;
                     canvas.height = imgHeight;
