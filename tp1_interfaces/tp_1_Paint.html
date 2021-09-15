@@ -4,7 +4,6 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <!--  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">-->
     <link rel="stylesheet" href="css/style.css">
     <title>Paint xD</title>
 </head>
@@ -25,14 +24,14 @@
             <label for="herramientas">Herramientas</label>
 
 
-            <input type="button" id="dibujar" value="Dib" class="slider">
-            <input type="button" id="borrar" value="Borr" class="slider">
-            <input type="button" value="Limp" onclick="limpiar();" class="slider">
-            <input type="button" id=restaurar value="Rest" class="slider">
+            <input type="button" id="dibujar" value="Dibujar" class="slider">
+            <input type="button" id="borrar" value="Borrar" class="slider">
+            <input type="button" value="Limpiar" onclick="limpiar();" class="slider">
+            <input type="button" id=restaurar value="Restaurar" class="slider">
 
 
             <input type="color" id="color" oninput="getColor(this.value);">
-            <input type="range" id="range" onchange="getRange(this);" min="1" max="10" value="1">
+            <input type="range" id="range" onchange="getRange(this);" min="1" max="15" value="1">
 
             <!--Filtros-->
             <label for="filtros">Filtros</label>
