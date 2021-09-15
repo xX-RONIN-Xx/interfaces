@@ -53,6 +53,8 @@ canvas.addEventListener('mouseup', function (e) {
 // llama a cambiar color para que actualice el color elegido antes de dibujar
 dibujar.addEventListener("click", changeColorOnDrawing);
 function changeColorOnDrawing() {
+    //document.getElementsByTagName("body")[0].style.cursor = "url('http://wiki-devel.sugarlabs.org/images/e/e2/Arrow.cur'), auto";
+
     color = document.getElementById('color').value;
 }
 //funcion para borrar
