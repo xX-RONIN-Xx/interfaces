@@ -5,13 +5,27 @@
 let canvas = document.getElementById("myCanvas");
 let ctx = canvas.getContext("2d");
 let rec = canvas.getBoundingClientRect();
-ctx.lineWidth = 1;
 let imageRes;
-let x = 0; let y = 0; let x1; let y1; let draw = false; let color = 'black'; let datosImg; let imgWidth = 0; let imgHeight = 0;
+let x = 0; let y = 0; let draw = false; let color = 'black'; let datosImg; let imgWidth = 0; let imgHeight = 0;
 
-canvas.width = 700;
+canvas.width = 900;
 canvas.height = 500;
 
+//Dibuja Canvas Inicial
+function drawCanvasBlanco() {
+
+    color = 'white';
+    ctx.fillStyle = color;
+    ctx.fillRect(0,0,canvas.width,canvas.width);
+
+}
+drawCanvasBlanco();
+
+//Color al borde
+color = 'black';
+ctx.strokeStyle = color;
+ctx.lineWidth = 4;
+ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
 function getColor(valueColor) {
     color = valueColor;
@@ -24,31 +38,21 @@ function getRange(range) {
 
 
 canvas.addEventListener('mousedown', function (e) {
-    let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    
-    for (let x = 0; x < imageData.width; x++) {
-        for (let y = 0; y < imageData.height; y++) {
 
-            x1 = x;
-            y1 = y;
-            x = e.layerX - x1;
-            y = e.layerY - y1;
-           
-            }
-            if ((x>+0 && x<= imageData.width) && (y>=0 && y<= imageData.height) ){
-                draw = true;
-            }
-        }    
+    x = e.clientX - rec.left;
+    y = e.clientY - rec.top;
+    draw = true;
 
-        })
+
+})
 
 canvas.addEventListener('mousemove', function (e) {
 
     if (draw === true) {
 
-        drawing(x, y, e.layerX - x1, e.layerY - y1);
-        x = e.layerX - x1;
-        y = e.layerY - x2;
+        drawing(x, y, e.clientX - rec.left, e.clientY - rec.top);
+        x = e.clientX - rec.left;
+        y = e.clientY - rec.top;
     }
 
 })
@@ -57,7 +61,7 @@ canvas.addEventListener('mouseup', function (e) {
 
     if (draw === true) {
 
-        drawing(x, y, e.layerX - x1, e.layerY - y1);
+        drawing(x, y, e.clientX - rec.left, e.clientY - rec.top);
         x = 0;
         y = 0;
         draw = false;
@@ -104,9 +108,9 @@ function Borrar(x1, y1, x2, y2) {
 
 function limpiar() {
 
-    canvas.width = 700;
+    canvas.width = 900;
     canvas.height = 500;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawCanvasBlanco();
     color = 'black';
     ctx.strokeStyle = color;
     ctx.strokeRect(0, 0, canvas.width, canvas.height);
@@ -131,7 +135,7 @@ function guardarImg() {
 }
 
 restaurar.addEventListener('click', restaurarImg);
-function restaurarImg() {
+function restaurarImg(){
 
     for (let x = 0; x < datosImg.width; x++) {
         for (let y = 0; y < datosImg.height; y++) {
@@ -188,8 +192,8 @@ function cargarImagen() {
                 if ((imgHeight > canvas.height && imgWidth > canvas.width) || (imgHeight > canvas.height && imgWidth < canvas.width) ||
                     (imgHeight < canvas.height && imgWidth > canvas.width)) {
 
-                    canvas.height = imgHeight / 2;
-                    canvas.width = imgWidth / 2;
+                    canvas.height = imgHeight/(5/2);
+                    canvas.width = imgWidth /(5/2);
 
                 } else {
 
